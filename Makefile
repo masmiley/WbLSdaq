@@ -1,5 +1,5 @@
-CFLAGS = -march=native -mtune=native -Wall -Werror -pedantic -g -Og -std=c++11 -DLINUX -Isrc
-LFLAGS = -lhdf5_cpp -lhdf5 -lCAENVME -lCAENDigitizer -pthread
+CFLAGS = -march=native -mtune=native -Wall -Werror -pedantic -g -O3 -std=c++11 -DLINUX -Isrc
+LFLAGS = -lhdf5_cpp -lhdf5 -lCAENVME -lCAENDigitizer -pthread -s
 
 # component object for each src/*.cc with header src/*.hh
 LSRC = $(wildcard src/*.cc)
@@ -19,7 +19,7 @@ all: $(BINS)
 
 # binaries depend on all component objects
 $(BINS): %: build/%.o $(LOBJ)
-	$(CXX) -g $< $(LOBJ) $(LFLAGS) -o $@
+	$(CXX) $< $(LOBJ) $(LFLAGS) -o $@
 
 $(BDEP): build/%.d: src/%.cxx
 	@mkdir -p build

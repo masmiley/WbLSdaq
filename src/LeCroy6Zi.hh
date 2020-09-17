@@ -26,21 +26,48 @@
 #include <vector>
 #include <stdexcept>
 
-#include <RemoteCommunication.hh>
-
 class LeCroy6Zi {
     public:
-        LeCroy6Zi(RemoteCommunication* remote);
+    
+        LeCroy6Zi(std::string addr, int port = 1861, double timeout = 1.0);
         virtual ~LeCroy6Zi();
         
-        RemoteCommunication* remote;
+        void send(std::string msg, uint8_t flags = OP_DATA|OP_EOI|OP_LOCKOUT);
+        
+        std::string recv();
         
         void checklast();
         
-        inline void stop() { remote->send("TRMD STOP"); }
-        inline void normal() { remote->send("TRMD NORM"); }
-        inline void single() { remote->send("TRMD SINGLE"); }
-        inline void save(int i) { remote->send("*SAV " + std::to_string(i)); }
-        inline void recall(int i) { remote->send("*RCL " + std::to_string(i)); }
-        inline void reset() { remote->send("*RST"); }
+        void clear(double timeout = 0.1);
+        
+        inline void stop() { send("TRMD STOP"); }
+        inline void normal() { send("TRMD NORM"); }
+        inline void single() { send("TRMD SINGLE"); }
+        inline void save(int i) { send("*SAV " + std::to_string(i)); }
+        inline void recall(int i) { send("*RCL " + std::to_string(i)); }
+        inline void reset() { send("*RST"); }
+    
+    protected:
+    
+        static constexpr uint8_t OP_DATA    = 1<<7;
+        static constexpr uint8_t OP_REMOTE  = 1<<6;
+        static constexpr uint8_t OP_LOCKOUT = 1<<5;
+        static constexpr uint8_t OP_CLEAR   = 1<<4;
+        static constexpr uint8_t OP_SRQ     = 1<<3;
+        static constexpr uint8_t OP_SPOLL   = 1<<2;
+        static constexpr uint8_t OP_RES     = 1<<1;
+        static constexpr uint8_t OP_EOI     = 1<<0;
+        
+        typedef struct {
+            uint8_t operation;
+            uint8_t version;
+            uint8_t seqnum;
+            uint8_t spare;
+            uint32_t length;
+        } header;
+        
+        uint8_t seqnum;
+        int sockfd;
+        struct timeval timeout; 
+        
 };

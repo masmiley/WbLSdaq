@@ -33,8 +33,6 @@
 #include "V1742.hh"
 #include "V65XX.hh"
 #include "LeCroy6Zi.hh"
-#include "EthernetCommunication.hh"
-#include "FileCommunication.hh"
 
 using namespace std;
 using namespace H5;
@@ -408,18 +406,11 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < lecroy6zis.size(); i++) {
         RunTable &tbl = lecroy6zis[i];
         cout << "\t" << tbl["index"].cast<string>() << endl;
-        RemoteCommunication* remote = NULL;
-        if (tbl.isMember("host"))
-            remote = new EthernetCommunication(tbl["host"].cast<string>(),tbl["port"].cast<int>(),tbl["timeout"].cast<double>());
-        else if (tbl.isMember("path"))
-            remote = new FileCommunication(tbl["path"].cast<string>());
-        else
-            throw runtime_error("Remote communication must be ethernet- or file-baed");
-        lescopes.push_back(new LeCroy6Zi(remote));
+        lescopes.push_back(new LeCroy6Zi(tbl["host"].cast<string>(),tbl["port"].cast<int>(),tbl["timeout"].cast<double>()));
         lescopes.back()->reset();
-//      lescopes.back()->checklast();
+        lescopes.back()->checklast();
         lescopes.back()->recall(tbl["load"].cast<int>());
-//      lescopes.back()->checklast();
+        lescopes.back()->checklast();
     }
     
     cout << "Setting up digitizers..." << endl;
@@ -586,15 +577,7 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < lecroy6zis.size(); i++) {
         RunTable &tbl = lecroy6zis[i];
         try { //want to make sure this doesn't ever cause a crash
-            RemoteCommunication* remote = NULL;
-            if (tbl.isMember("host"))
-                remote = new EthernetCommunication(tbl["host"].cast<string>(),tbl["port"].cast<int>(),tbl["timeout"].cast<double>());
-            else if (tbl.isMember("path"))
-                remote = new FileCommunication(tbl["path"].cast<string>());
-            else{
-                throw runtime_error("Remote communication must be ethernet- or file-baed");
-            }
-            LeCroy6Zi *tmpscope = new LeCroy6Zi(remote);
+            LeCroy6Zi *tmpscope = new LeCroy6Zi(tbl["host"].cast<string>(),tbl["port"].cast<int>(),tbl["timeout"].cast<double>());
             tmpscope->stop();
         } catch (runtime_error &e) {
             cout << "Could not stop scope! : " << e.what() << endl;
