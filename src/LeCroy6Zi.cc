@@ -15,7 +15,8 @@
  *  along with WbLSdaq. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LeCroy6Zi.hh"
+#include <IOUtils.hh>
+#include <LeCroy6Zi.hh>
 
 #include <cmath>
 #include <iostream>
@@ -55,28 +56,6 @@ LeCroy6Zi::LeCroy6Zi(string addr, int port, double _timeout) : seqnum(0) {
 
 LeCroy6Zi::~LeCroy6Zi() {
     close(sockfd);
-}
-
-void fdwrite(int fd, const void *buf, size_t count) {
-    size_t num = 0;
-    while (num != count) {
-        int res = write(fd,((char*)buf)+num,count-num);
-        if (res == -1)
-            throw runtime_error("Write failed " + to_string(errno));
-        num += res;
-    }
-}
-
-void fdread(int fd, void *buf, size_t count) {
-    size_t num = 0;
-    while (num != count) {
-        int res = read(fd,((char*)buf)+num,count-num);
-        if (res == -1)
-            throw runtime_error("Read failed " + to_string(errno));
-        if (res == 0) 
-            throw runtime_error("EOF Reached");
-        num += res;
-    }
 }
 
 void LeCroy6Zi::send(string msg, uint8_t flags) {
