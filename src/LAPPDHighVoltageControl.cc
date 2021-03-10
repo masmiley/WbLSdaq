@@ -205,7 +205,7 @@ int LAPPDHighVoltageControl::setMCPVoltages(double a_volts)
 ///If power is on changes will be adopted immediately
 int LAPPDHighVoltageControl::setPhotocathodeVoltage(double a_volts)
 {
-  if(a_volts < 100 && a_volts > -10)
+  if(a_volts < 250 && a_volts > -10)
   {
     m_relativeVoltages[4] = a_volts;
   }
