@@ -19,7 +19,7 @@
 
 #include "VMECard.hh"
 #include "Buffer.hh"
-#include "H5Cpp.h"
+#include <H5Cpp.h>
 
 #ifndef Digitizer__hh
 #define Digitizer__hh

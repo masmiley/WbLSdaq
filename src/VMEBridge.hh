@@ -34,7 +34,7 @@ class VMEBridge {
     public:
         VMEBridge(int link, int board);
         
-        virtual ~VMEBridge();
+        virtual ~VMEBridge() noexcept(false);
         
         inline int getLinkNum() { return link; }
         inline int getBoardNum() { return board; }
