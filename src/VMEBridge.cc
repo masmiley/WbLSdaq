@@ -32,7 +32,7 @@ VMEBridge::VMEBridge(int link, int board) {
     }
 }
 
-VMEBridge::~VMEBridge() {
+VMEBridge::~VMEBridge() noexcept(false) {
     int res = CAENVME_End(handle);
     if (res) {
         stringstream err;

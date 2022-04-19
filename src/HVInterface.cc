@@ -84,7 +84,7 @@ int HVInterface::setHVExact(int a_channel, float a_voltage, float v_tol, double 
   float offP = 0;
   float offI = 0;
   float voltsNow = getMeasuredHV(a_channel);
-  while(abs(voltsNow-a_voltage)>v_tol)
+  while(std::abs(voltsNow-a_voltage)>v_tol)
   {
     int loopCount = 0;
     setHV(a_channel,a_voltage+offP+offI);
@@ -140,7 +140,7 @@ void HVInterface::calibrate(int ch, bool danger)
     for (int i = 0; i < 30; i++) {
       std::this_thread::sleep_for(std::chrono::seconds(1));
       float cur = getMeasuredHV(ch);
-      if (fabs(cur-last) < 1 && fabs((cur-v_test[vi])/v_test[vi]) < 0.2) break;
+      if (std::abs(cur-last) < 1 && std::abs((cur-v_test[vi])/v_test[vi]) < 0.2) break;
       last = cur;
     }
     v_meas[vi] = getMeasuredHV(ch);

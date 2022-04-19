@@ -390,7 +390,9 @@ int main(int argc, char **argv) {
 
     cout << "Opening VME link..." << endl;
     
-    VMEBridge bridge(linknum,0);
+    // ejc
+    // from the device having swapped to _1, have tracked this down as a bug?
+    VMEBridge bridge(0,linknum);
     
     vector<V65XX*> hvs;
     vector<RunTable> v65XXs = db.getGroup("V65XX");
