@@ -16,31 +16,16 @@
  */
 
 #include <cstdio>
-#include <cstring>
-
-#include <netdb.h>
 #include <unistd.h>
 #include <sys/types.h>
-
-#include <string>
-#include <vector>
+#include <fcntl.h>
 #include <stdexcept>
+#include <FileCommunication.hh>
 
-#include <RemoteCommunication.hh>
-
-class LeCroy6Zi {
-    public:
-        LeCroy6Zi(RemoteCommunication* remote);
-        virtual ~LeCroy6Zi();
-        
-        RemoteCommunication* remote;
-        
-        void checklast();
-        
-        inline void stop() { remote->send("TRMD STOP"); }
-        inline void normal() { remote->send("TRMD NORM"); }
-        inline void single() { remote->send("TRMD SINGLE"); }
-        inline void save(int i) { remote->send("*SAV " + std::to_string(i)); }
-        inline void recall(int i) { remote->send("*RCL " + std::to_string(i)); }
-        inline void reset() { remote->send("*RST"); }
-};
+FileCommunication::FileCommunication(std::string path){
+    fd = open(path.c_str(), O_RDWR);
+    if (fd == -1){
+        perror("error is: ");
+        throw std::runtime_error("Could not open file " + std::to_string(errno));
+    }
+}

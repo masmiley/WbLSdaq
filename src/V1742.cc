@@ -198,6 +198,9 @@ bool V1742::program(DigitizerSettings &_settings) {
     write32(REG_BOARD_CONFIGURATION_RELOAD,0);
     
     usleep(10000);
+
+    //Print firmware version
+    cout << "Current firmware version: " << read32(0x8124) << "\n\n";
     
     //Set TTL logic levels, ignore LVDS and debug settings
     data = (1<<0) // ttl levels
