@@ -1,5 +1,6 @@
-CFLAGS = -march=native -mtune=native -Wall -Werror -pedantic -g -Og -std=c++11 -DLINUX -Isrc $(shell pkg-config hdf5 --cflags)
-LFLAGS = $(shell pkg-config hdf5 --libs-only-L) -lhdf5_cpp -lhdf5 -lCAENVME -lCAENDigitizer -pthread
+CAEN_INSTALL ?= /usr
+CFLAGS = -march=native -mtune=native -Wall -Werror -pedantic -g -Og -std=c++11 -DLINUX -Isrc $(shell pkg-config hdf5 --cflags) -I$(CAEN_INSTALL)/include
+LFLAGS = $(shell pkg-config hdf5 --libs-only-L) -lhdf5_cpp -lhdf5 -L$(CAEN_INSTALL)/lib -lCAENVME -lCAENComm -lCAENDigitizer -pthread
 
 # component object for each src/*.cc with header src/*.hh
 LSRC = $(wildcard src/*.cc)
