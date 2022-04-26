@@ -29,7 +29,8 @@
 
 #include "RunDB.hh"
 #include "VMEBridge.hh"
-#include "V1730_dpppsd.hh"
+//#include "V1730_dpppsd.hh"
+#include "V1730.hh"
 #include "V1742.hh"
 #include "V65XX.hh"
 #include "LeCroy6Zi.hh"
