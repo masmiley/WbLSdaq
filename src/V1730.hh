@@ -25,8 +25,8 @@
 #include "RunDB.hh"
 #include "json.hh"
 
-#ifndef V1730_dpppsd__hh
-#define V1730_dpppsd__hh
+#ifndef V1730__hh
+#define V1730__hh
 
 typedef struct {
 
@@ -197,14 +197,9 @@ class V1730 : public Digitizer {
         static constexpr uint32_t REG_DYNAMIC_RANGE = 0x1028; // was 0x1024
         static constexpr uint32_t REG_NEV_AGGREGATE = 0x1034;  // can't find it, keep it
         static constexpr uint32_t REG_PRE_TRG = 0x1038; // can't find it, keep it
-        //static constexpr uint32_t REG_SHORT_GATE = 0x1054; // can't find it, charge integral related, comment out
-        //static constexpr uint32_t REG_LONG_GATE = 0x1058; // can't find it, charge integral related, comment out
-        //static constexpr uint32_t REG_PRE_GATE = 0x105C; // can't find it, charge integral related, comment out
-        //static constexpr uint32_t REG_DPP_TRG_THRESHOLD = 0x1060; // can't find it, charge integral related, comment out
         static constexpr uint32_t REG_BASELINE_THRESHOLD = 0x1064; // can't find it, keep it
         static constexpr uint32_t REG_SHAPED_TRIGGER_WIDTH = 0x1070; // good
         static constexpr uint32_t REG_TRIGGER_HOLDOFF = 0x1074; // can't find it, keep it    
-        //static constexpr uint32_t REG_DPP_CTRL = 0x1080; // can't find it, DPP, comment out
         static constexpr uint32_t REG_TRIGGER_CTRL = 0x1084; // good
         static constexpr uint32_t REG_DC_OFFSET = 0x1098; // good
         static constexpr uint32_t REG_CHANNEL_TEMP = 0x10A8; // good
