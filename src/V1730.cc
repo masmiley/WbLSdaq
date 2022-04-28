@@ -549,48 +549,40 @@ void V1730Decoder::writeOut(H5File &file, size_t nEvents) {
 }
 
 uint32_t* V1730Decoder::decode_chan_agg(uint32_t *chanagg, uint32_t group, uint16_t pattern) {
+
     const bool format_flag = chanagg[0] & 0x80000000;
     if (!format_flag) throw runtime_error("Channel format not found");
     
     chanagg_counter++;
     
-    const uint32_t size = chanagg[0] & 0x7FFF;
-    const uint32_t format = chanagg[1];
-    const uint32_t samples = (format & 0xFFF)*8;
+    //const uint32_t size = chanagg[0] & 0x7FFF;
+    //const uint32_t format = chanagg[1];
+    //const uint32_t samples = (format & 0xFFF)*8;
+   
+    uint32_t idx0 = chan2idx[group] ;
+    //const uint32_t idx0 = chan2idx.count(group * 2 + 0) ? chan2idx[group * 2 + 0] : 999;
+    //const uint32_t idx1 = chan2idx.count(group * 2 + 1) ? chan2idx[group * 2 + 1] : 999;
     
-    /*
-    //Metadata
-    const bool dualtrace_enable = format & (1<<31);
-    const bool charge_enable =format & (1<<30);
-    const bool time_enable = format & (1<<29);
-    const bool baseline_enable = format & (1<<28);
-    const bool waveform_enable = format & (1<<27);
-    const uint32_t extras = (format >> 24) & 0x7;
-    const uint32_t analog_probe = (format >> 22) & 0x3;
-    const uint32_t digital_probe_2 = (format >> 19) & 0x7;
-    const uint32_t digital_probe_1 = (format >> 16) & 0x7;
-    */
-    
-    const uint32_t idx0 = chan2idx.count(group * 2 + 0) ? chan2idx[group * 2 + 0] : 999;
-    const uint32_t idx1 = chan2idx.count(group * 2 + 1) ? chan2idx[group * 2 + 1] : 999;
-    
-    for (uint32_t *event = chanagg+2; (size_t)(event-chanagg+1) < size; event += samples/2+3) {
+    //for (uint32_t *event = chanagg+2; (size_t)(event-chanagg+1) < size; event += samples/2+3) {
         
-        const bool oddch = event[0] & 0x80000000;
-        const uint32_t idx = oddch ? idx1 : idx0;
+        //const bool oddch = event[0] & 0x80000000;
+        //const uint32_t idx = oddch ? idx1 : idx0;
+	const uint32_t idx = idx0;
         const uint32_t len = nsamples[idx];
         
-        if (idx == 999) throw runtime_error("Received data for disabled channel (" + to_string(group*2+oddch?1:0) + ")");
-        
-        if (len != samples) throw runtime_error("Number of samples received " + to_string(samples) + " does not match expected " + to_string(len) + " (" + to_string(idx2chan[idx]) + ")");
+        //if (idx == 999) throw runtime_error("Received data for disabled channel (" + to_string(group*2+oddch?1:0) + ")");
+        if (idx == 999) throw runtime_error("Received data for disabled channel (" + to_string(group) + ")");
+
+        //if (len != samples) throw runtime_error("Number of samples received " + to_string(samples) + " does not match expected " + to_string(len) + " (" + to_string(idx2chan[idx]) + ")");
         
         if (eventBuffer) {
             const size_t ev = grabbed[idx]++;
             if (ev == eventBuffer) throw runtime_error("Decoder buffer for " + settings.getIndex() + " overflowed!");
             uint16_t *data = grabs[idx] + ev*len;
             
-            for (uint32_t *word = event+1, sample = 0; sample < len; word++, sample+=2) {
-                data[sample+0] = *word & 0x3FFF;
+            //for (uint32_t *word = event+1, sample = 0; sample < len; word++, sample+=2) {
+	    for (uint32_t *word = 0, sample = 0; sample < len; word++, sample+=2) {
+      	        data[sample+0] = *word & 0x3FFF;
                 //uint8_t dp10 = (*word >> 14) & 0x1;
                 //uint8_t dp20 = (*word >> 15) & 0x1;
                 data[sample+1] = (*word >> 16) & 0x3FFF;
@@ -599,17 +591,20 @@ uint32_t* V1730Decoder::decode_chan_agg(uint32_t *chanagg, uint32_t group, uint1
             }
             
             patterns[idx][ev] = pattern;
-            baselines[idx][ev] = event[1+samples/2+0] & 0xFFFF;
-            qshorts[idx][ev] = event[1+samples/2+1] & 0x7FFF;
-            qlongs[idx][ev] = (event[1+samples/2+1] >> 16) & 0xFFFF;
-            times[idx][ev] = ((uint64_t)(event[0] & 0x7FFFFFFF)) | (((uint64_t)(event[1+samples/2+0]&0xFFFF0000))<<15);
+            //baselines[idx][ev] = event[1+samples/2+0] & 0xFFFF;
+            //qshorts[idx][ev] = event[1+samples/2+1] & 0x7FFF;
+            //qlongs[idx][ev] = (event[1+samples/2+1] >> 16) & 0xFFFF;
+            //times[idx][ev] = ((uint64_t)(event[0] & 0x7FFFFFFF)) | (((uint64_t)(event[1+samples/2+0]&0xFFFF0000))<<15);
         } else {
             grabbed[idx]++;
         }
     
-    }
+    //}
     
-    return chanagg + size;
+    //return chanagg + size;
+    return chanagg + len;
+    
+
 }
 
 uint32_t* V1730Decoder::decode_board_agg(uint32_t *boardagg) {
@@ -625,9 +620,10 @@ uint32_t* V1730Decoder::decode_board_agg(uint32_t *boardagg) {
     
     //const uint32_t board = (boardagg[1] >> 28) & 0xF;
     //const bool fail = boardagg[1] & (1 << 26);
-    const uint16_t pattern = (boardagg[1] >> 8) & 0x7FFF;
-    const uint32_t mask = boardagg[1] & 0xFF;
-    
+    //const uint16_t pattern = (boardagg[1] >> 8) & 0x7FFF;
+    const uint16_t pattern = (boardagg[1] >> 8) & 0xFFFF; // this has been changed
+    const uint32_t mask = boardagg[1] & 0xFF; // question about the mask -> here we only take 8 masks but in the document, there are 16, we are only taking half of this. Ed's comment: I agree with you that this looks like a bug, but I actually doubt it is. we can do an easy test to determine whether it is or not. for now I would recommend not messing with it at that level, and only change the decoding in decode_chan_aggs to match the channel event structure.
+
     cout << "\t(LVDS & 0xFF): " << (pattern & 0xFF) << endl;
     
     //const uint32_t count = boardagg[2] & 0x7FFFFF;
@@ -635,7 +631,7 @@ uint32_t* V1730Decoder::decode_board_agg(uint32_t *boardagg) {
     
     uint32_t *chans = boardagg+4;
     
-    for (uint32_t gr = 0; gr < 8; gr++) {
+    for (uint32_t gr = 0; gr < 16; gr++) { // note again, this only loops through 8 groups with 8 masks. We actually have 16 masks in the event structure.
         if (mask & (1 << gr)) {
             chans = decode_chan_agg(chans,gr,pattern);
         }
@@ -643,3 +639,4 @@ uint32_t* V1730Decoder::decode_board_agg(uint32_t *boardagg) {
     
     return boardagg+size;
 }
+
