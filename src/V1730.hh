@@ -25,6 +25,9 @@
 #include "RunDB.hh"
 #include "json.hh"
 
+#include "CAENDigitizer.h"
+#include "CAENDigitizerType.h"
+
 #ifndef V1730__hh
 #define V1730__hh
 
